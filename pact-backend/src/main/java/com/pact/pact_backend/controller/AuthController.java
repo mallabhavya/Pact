@@ -4,23 +4,33 @@ import com.pact.pact_backend.dto.request.LoginRequest;
 import com.pact.pact_backend.dto.request.RegisterRequest;
 import com.pact.pact_backend.dto.response.AuthResponse;
 import com.pact.pact_backend.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
-    @PostMapping("/register")
-    public String register(@RequestBody RegisterRequest request) {
-        return authService.registerUser(request);
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    @PostMapping({"/register", "/signup"})
+    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+        String response = authService.registerUser(request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody LoginRequest request) {
-        return authService.loginUser(request);
+    public ResponseEntity<Object> login(@RequestBody LoginRequest request) {
+        try {
+            AuthResponse response = authService.loginUser(request);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
     }
 }
