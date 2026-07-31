@@ -20,8 +20,12 @@ public class AuthController {
 
     @PostMapping({"/register", "/signup"})
     public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
-        String response = authService.registerUser(request);
-        return ResponseEntity.ok(response);
+        try {
+            String response = authService.registerUser(request);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PostMapping("/login")

@@ -23,7 +23,7 @@ public class AuthService {
 
     public String registerUser(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            return "Error: Email already exists!";
+            throw new RuntimeException("Error: Email already exists!");
         }
         User user = new User();
         user.setName(request.getName());
