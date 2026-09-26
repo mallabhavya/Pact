@@ -20,5 +20,13 @@ public class User {
 
     private String password;
 
+    private String handle;
+    private String avatar;
+    private String status;
+    private String bio;
+    private String location;
+    private String insta;
+    private String spotify;
+
     private LocalDateTime createdAt = LocalDateTime.now(Clock.systemUTC());
 }

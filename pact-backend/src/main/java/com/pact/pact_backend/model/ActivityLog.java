@@ -5,13 +5,12 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tasks")
+@Table(name = "activity_logs")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Task {
-
+public class ActivityLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,29 +19,23 @@ public class Task {
     private Long roomId;
 
     @Column(nullable = false)
-    private String title;
+    private Long userId;
 
-    private String description;
-
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @Builder.Default
-    private TaskStatus status = TaskStatus.PENDING;
+    private String action; // e.g., "completed", "added", "joined"
 
-    private Long assignedTo; // User ID
-    private Long createdBy;  // User ID
-    private LocalDateTime dueDate;
+    private String text; // e.g., Task title or context
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "activity_log_reactions", joinColumns = @JoinColumn(name = "activity_log_id"))
+    @MapKeyColumn(name = "user_id")
+    @Column(name = "emoji")
+    private java.util.Map<String, String> reactions = new java.util.HashMap<>();
+
     private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-    }
-
-    public enum TaskStatus {
-        PENDING,
-        IN_PROGRESS,
-        COMPLETED,
-        VERIFIED
     }
 }
